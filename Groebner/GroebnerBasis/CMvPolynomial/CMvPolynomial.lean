@@ -2,6 +2,8 @@ import Aesop
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Order.Basic
 
+import Mathlib.Algebra.MvPolynomial.Basic
+
 /-!
 # Multivariate polynomials
 
@@ -54,6 +56,10 @@ def tail (m : CMonomial σ) : CMonomial σ where
     intro xn h
     exact m.is_reduced xn (List.mem_of_mem_tail h)
 
+@[ext]
+lemma ext {m₁ m₂ : CMonomial σ} (h : m₁.lst = m₂.lst) : m₁ = m₂ := by
+  cases m₁; cases m₂; simp_all
+
 -- Computation of the product of monomials.
 section Mul
 
@@ -69,27 +75,25 @@ def mul' (a b : CMonomial σ) : CMonomialMul a b := by
   match ha : a.lst, hb : b.lst with
   | _, [] => exact ⟨a, fun _ h _ => ha ▸ h⟩
   | [], _ => exact ⟨b, fun _ _ h => hb ▸ h⟩
-  | (x, nx) :: as, (y, ny) :: bs =>
-    sorry
+  | _, _ => sorry
 
 /-- Compute the product of two monomials. -/
 def mul (a b : CMonomial σ) : CMonomial σ :=
   (mul' a b).ab
-
--- def mx1 : CMonomial (Fin 2) := ofVar 0
--- def mx2 : CMonomial (Fin 2) := ofVarExp 0 2 (by simp)
--- def my1 : CMonomial (Fin 2) := ofVar 1
--- def mx3y1 : CMonomial (Fin 2) := mul (mul mx1 my1) mx2
 
 end Mul
 
 -- Computation of the lowest common multiple of monomials.
 section LCM
 
+-- WIP
+
 end LCM
 
 -- Computation of the quotient of monomials.
 section Div
+
+-- WIP
 
 end Div
 
@@ -125,3 +129,5 @@ noncomputable def equivFinsupp : CMonomial σ ≃ (σ →₀ ℕ) where
 end Equiv
 
 end CMonomial
+
+open MvPolynomial
