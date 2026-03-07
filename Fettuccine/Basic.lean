@@ -1,5 +1,5 @@
-import Groebner.GroebnerBasis.Criterion
-import Groebner.GroebnerBasis.CBuchberger
+import Fettuccine.GroebnerBasis.Criterion
+import Fettuccine.GroebnerBasis.Buchberger
 import Mathlib.Data.Finsupp.MonomialOrder.DegLex
 
 /-!
@@ -11,7 +11,7 @@ collects the main API items for easy reference.
 ## Module structure
 
 ```
-Groebner/
+Fettuccine/
   GroebnerBasis/
     CMvPolynomial/
       CMvPolynomial.lean  — CMonomial, CMvPolynomial; CMonomial.toFinsupp, CMvPolynomial.toMvPolynomial

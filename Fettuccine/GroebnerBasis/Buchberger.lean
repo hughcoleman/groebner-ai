@@ -1,4 +1,4 @@
-import Groebner.GroebnerBasis.CMvPolynomial.CMonomialOrder
+import Fettuccine.GroebnerBasis.MvPolynomial.CMonomialOrder
 import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.RingTheory.Ideal.Span
 

@@ -1,4 +1,4 @@
-import Groebner.GroebnerBasis.CMvPolynomial.CMvPolynomial
+import Fettuccine.GroebnerBasis.MvPolynomial.CMvPolynomial
 
 /-!
 # Monomial orders
