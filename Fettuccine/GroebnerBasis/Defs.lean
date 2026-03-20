@@ -1,1 +1,0 @@
--- Definitions about Groebner bases.
