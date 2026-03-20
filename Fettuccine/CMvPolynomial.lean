@@ -79,7 +79,6 @@ lemma ext {m₁ m₂ : CMonomial σ} (h : ∀ i, m₁ i = m₂ i) : m₁ = m₂ 
 
 instance : One (CMonomial σ) := ⟨⟨0⟩⟩
 instance : Mul (CMonomial σ) := ⟨fun m₁ m₂ => ⟨m₁.toFun + m₂.toFun⟩⟩
-instance : Pow (CMonomial σ) ℕ := ⟨fun m n => ⟨n • m.toFun⟩⟩
 
 @[simp] lemma toFun_one : (1 : CMonomial σ).toFun = 0 := rfl
 
@@ -208,6 +207,10 @@ def X (i : σ) : CMvPolynomial σ R :=
 /-- The constant polynomial with value `a`. -/
 def C (a : R) : CMvPolynomial σ R :=
   ⟨DirectSum.of (fun _ => R) 1 a⟩
+
+/-- The polynomial of a monomial. -/
+def ofMonomial (a : R) (m : CMonomial σ) : CMvPolynomial σ R :=
+  ⟨DirectSum.of (fun _ => R) m a⟩
 
 /-- Display a polynomial as a sum of terms. -/
 instance [DecidableEq R] [LinearOrder σ] [Repr σ] [Repr R] :
