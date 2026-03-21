@@ -39,15 +39,11 @@ def lt' (m₁ m₂ : CMonomial σ) : Prop :=
 def le' (m₁ m₂ : CMonomial σ) : Prop :=
   @LE.le _ ord.toLE m₁ m₂
 
-section Notation
-
 /-- Notation for the strict order relation for monomial orders. -/
 scoped notation:50 lhs " ≺[" ord "] " rhs => CMonomialOrder.lt' ord lhs rhs
 
 /-- Notation for the order relation for monomial orders. -/
 scoped notation:50 lhs " ≼[" ord "] " rhs => CMonomialOrder.le' ord lhs rhs
-
-end Notation
 
 lemma zero_le (m : CMonomial σ) : 0 ≼[ord] m := by
   simp only [le']
