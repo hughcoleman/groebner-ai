@@ -106,10 +106,10 @@ lemma leadingMonomial_mem_support (f : CMvPolynomial σ R) (hf : f.support.Nonem
     f.support.max' hf ∈ f.support := by
   exact Finset.max'_mem f.support hf
 
-/- The leading monomial is none if and only if the polynomial is zero. -/
-lemma leadingMonomial_eq_none_iff (f : CMvPolynomial σ R) :
-    leadingMonomial ord f = none ↔ f = 0 := by
-  sorry
+-- /- The leading monomial is none if and only if the polynomial is zero. -/
+-- lemma leadingMonomial_eq_none_iff (f : CMvPolynomial σ R) :
+--     leadingMonomial ord f = none ↔ f = 0 := by
+--   sorry
 
 /-- The leading monomial is indeed an upper bound for the support. -/
 lemma le_leadingMonomial (f : CMvPolynomial σ R) {m : CMonomial σ} (hm : m ∈ f.support) :
