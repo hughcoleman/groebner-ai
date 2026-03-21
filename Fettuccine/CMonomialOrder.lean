@@ -25,7 +25,8 @@ lexicographic (grevlex) orders.
 
 /-- A **monomial order** on `σ` is a well-founded, translation-invariant, decidable total order on
     `CMonomial σ`. -/
--- This pretty blatantly copies the structure of https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Data/Finsupp/MonomialOrder.lean.
+-- This pretty blatantly copies the structure of Mathlib/Data/Finsupp/MonomialOrder.lean, but
+-- perhaps this will turn out to be a desirable property.
 structure CMonomialOrder (σ : Type*) [DecidableEq σ] where
   /-- The synonym type from which the order is lifted. -/
   syn : Type*
