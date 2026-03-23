@@ -107,7 +107,7 @@ lemma eq_of_add_eq_of_le' {m₁ m₂ m₁' m₂' : ord.syn}
 
 section Instances
 
-variable [LinearOrder σ] [WellFoundedGT σ]
+variable [DecidableEq σ] [LinearOrder σ] [WellFoundedLT σ]
 
 instance instGrlexIsOrderedCancelAddMonoid :
     IsOrderedCancelAddMonoid (Lex (ℕ × Lex (Π₀ _ : σ, ℕ))) where
@@ -129,38 +129,58 @@ instance instGrlexWellFoundedLT [WellFoundedGT σ] :
 
 -- The lexicographic order on monomials is just the lexicographic order on their exponent vectors.
 instance lex : CMonomialOrder σ where
-  syn             := Lex (Π₀ _ : σ, ℕ)
-  acm             := instAddCommMonoidLex
-  lo              := DFinsupp.Lex.linearOrder
-  iocam           := DFinsupp.Lex.isOrderedCancelAddMonoid
-  wf              := DFinsupp.Lex.wellFoundedLT
-  dec             := DFinsupp.Lex.decidableLE
-  toSyn           := { toFun    := fun m => toLex m.toFun
-                       map_zero' := toLex_eq_zero.mpr rfl
-                       map_add'  := fun _ _ => (Equiv.apply_eq_iff_eq_symm_apply toLex).mpr rfl }
-  toSyn_injective := fun m₁ m₂ h => by cases m₁; cases m₂; simp_all
+  syn   := Lex (Π₀ _ : σᵒᵈ, ℕ)
+  acm   := instAddCommMonoidLex
+  lo    := DFinsupp.Lex.linearOrder
+  iocam := DFinsupp.Lex.isOrderedCancelAddMonoid
+  wf    := DFinsupp.Lex.wellFoundedLT
+  dec   := DFinsupp.Lex.decidableLE
+  toSyn := {
+    -- Cast the monomial to use dualized indices so Lex starts at the "top"
+    toFun      := fun m => toLex (show Π₀ _ : σᵒᵈ, ℕ from m.toFun)
+    map_zero'  := toLex_eq_zero.mpr rfl
+    map_add'   := fun _ _ => rfl
+  }
+  toSyn_injective := fun m₁ m₂ h => by
+    cases m₁; cases m₂; simp_all
 
 -- The graded lexicographic order on monomials first compares by total degree, then breaks ties
 -- using the lexicographic order.
-instance grlex [WellFoundedGT σ] : CMonomialOrder σ where
-  syn             := Lex (ℕ × Lex (Π₀ _ : σ, ℕ))
-  acm             := instAddCommMonoidLex
-  lo              := Prod.Lex.instLinearOrder _ _
-  iocam           := instGrlexIsOrderedCancelAddMonoid
-  wf              := instGrlexWellFoundedLT
-  dec             := Prod.Lex.instDecidableRelOfDecidableEq
-  toSyn           := { toFun     := fun m => (m.degree, toLex m.toFun)
-                       map_zero'  := ofLex_eq_zero.mp rfl
-                       map_add'   := fun m₁ m₂ => by
-                         simp [CMonomial.degree_add, CMonomial.toFun_add]; rfl }
+instance grlex : CMonomialOrder σ where
+  syn   := ℕ ×ₗ Lex (Π₀ _ : σᵒᵈ, ℕ)
+  acm   := Prod.instAddCommMonoid
+  lo    := Prod.Lex.instLinearOrder ℕ (Lex (Π₀ (x : σᵒᵈ), ℕ))
+  iocam := instGrlexIsOrderedCancelAddMonoid
+  wf    := instGrlexWellFoundedLT
+  dec   := Prod.Lex.instDecidableRelOfDecidableEq
+  toSyn := {
+    toFun     := fun m => (m.degree, toLex (show Π₀ _ : σᵒᵈ, ℕ from m.toFun))
+    map_zero' := ofLex_eq_zero.mp rfl
+    map_add'  := fun m₁ m₂ => by
+      simp [CMonomial.degree_add, CMonomial.toFun_add]; rfl
+  }
   toSyn_injective := fun m₁ m₂ h => by
     have h' : toLex m₁.toFun = toLex m₂.toFun := congr_arg Prod.snd h
     cases m₁; cases m₂; simp_all
 
 -- The graded reverse lexicographic order on monomials first compares by total degree, then breaks
 -- ties by comparing the exponent vectors in reverse order.
-instance grevlex : CMonomialOrder σ :=
-  sorry
+instance grevlex : CMonomialOrder σ where
+  syn   := ℕ ×ₗ Lex (Π₀ _ : σ, ℕ)ᵒᵈ
+  acm   := Prod.instAddCommMonoid
+  lo    := Prod.Lex.instLinearOrder ℕ (Lex (Π₀ (x : σ), ℕ))ᵒᵈ
+  iocam := sorry
+  wf    := sorry
+  dec   := sorry
+  toSyn := {
+    toFun     := fun m => (m.degree, toLex (show Π₀ _ : σᵒᵈ, ℕ from m.toFun))
+    map_zero' := ofLex_eq_zero.mp rfl
+    map_add'  := fun m₁ m₂ => by
+      simp [CMonomial.degree_add, CMonomial.toFun_add]; rfl
+  }
+  toSyn_injective := fun m₁ m₂ h => by
+    have h' : toLex m₁.toFun = toLex m₂.toFun := congr_arg Prod.snd h
+    cases m₁; cases m₂; simp_all
 
 end Instances
 
@@ -168,7 +188,7 @@ end CMonomialOrder
 
 namespace CMonomialOrder
 
-variable {σ : Type*} [DecidableEq σ] [LinearOrder σ] [WellFoundedGT σ]
+variable {σ : Type*} [DecidableEq σ] [LinearOrder σ] [WellFoundedLT σ]
 
 -- A monomial order is said to be graded if it partitions by degree.
 def IsGraded [ord : CMonomialOrder σ] : Prop :=
@@ -177,7 +197,8 @@ def IsGraded [ord : CMonomialOrder σ] : Prop :=
 theorem grlex_isGraded : @IsGraded _ _ (grlex : CMonomialOrder σ) := by
   intros m₁ m₂ h
   change
-    toLex (m₁.degree, toLex m₁.toFun) < toLex (m₂.degree, toLex m₂.toFun)
+    toLex (m₁.degree, toLex (show Π₀ _ : σᵒᵈ, ℕ from m₁.toFun))
+    < toLex (m₂.degree, toLex (show Π₀ _ : σᵒᵈ, ℕ from m₂.toFun))
   rw [Prod.Lex.toLex_lt_toLex]
   exact Or.inl h
 
@@ -187,8 +208,11 @@ theorem grlex_lt_of_eq_degree_lex_lt (m₁ m₂ : CMonomial σ)
   -- The proof state is quite confusing, since both the assumptions and the goal are expressed in
   -- terms of (different) `toSyn`s. Perhaps there is an option that forces the implicit arguments
   -- to be visible.
-  change toLex m₁.toFun < toLex m₂.toFun
-  have h' : toLex (m₁.degree, toLex m₁.toFun) < toLex (m₂.degree, toLex m₂.toFun) := h
+  change toLex (show Π₀ _ : σᵒᵈ, ℕ from m₁.toFun) < toLex (show Π₀ _ : σᵒᵈ, ℕ from m₂.toFun)
+  have h' :
+      toLex (m₁.degree, toLex (show Π₀ _ : σᵒᵈ, ℕ from m₁.toFun))
+      < toLex (m₂.degree, toLex (show Π₀ _ : σᵒᵈ, ℕ from m₂.toFun)) :=
+    h
   -- Ultimately, this is true just by the definition of the lexicographic order on product types.
   rw [Prod.Lex.toLex_lt_toLex] at h'
   rcases h' with h' | ⟨_, h'⟩

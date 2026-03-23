@@ -16,7 +16,7 @@ variable {σ : Type*} [DecidableEq σ] [LinearOrder σ] [Repr σ]
 /-- Display a monomial. -/
 instance : Repr (CMonomial σ) where
   reprPrec m _ :=
-    let terms := m.support.sort (· ≤ ·)
+    let terms := m.support.sort (· ≥ ·)
       |>.filterMap fun x =>
         match m x with
         | 0 => none
