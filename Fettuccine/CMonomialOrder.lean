@@ -11,9 +11,9 @@ lexicographic (grevlex) orders.
 ## Definitions
 
 * `CMonomialOrder σ` : a well-founded, translation-invariant total order on `CMonomial σ`.
-* `CMonomialOrder.Lex.lex` : the lexicographic order on monomials.
-* `CMonomialOrder.Grlex.grlex` : the graded lexicographic order on monomials.
-* `CMonomialOrder.Grevlex.grevlex` : the graded reverse lexicographic order on monomials.
+* `CMonomialOrder.lex` : the lexicographic order on monomials.
+* `CMonomialOrder.grlex` : the graded lexicographic order on monomials.
+* `CMonomialOrder.grevlex` : the graded reverse lexicographic order on monomials.
 * `CMvPolynomial.leadingMonomial` : the leading monomial of a multivariate polynomial with respect
   to a monomial order.
 
@@ -127,8 +127,9 @@ instance instGrlexWellFoundedLT [WellFoundedGT σ] :
   ⟨InvImage.wf (fun (p : Lex (ℕ × Lex (Π₀ _ : σ, ℕ))) => (p.1, p.2))
     (WellFounded.prod_lex Nat.lt_wfRel.wf DFinsupp.Lex.wellFoundedLT.wf)⟩
 
--- The lexicographic order on monomials is just the lexicographic order on their exponent vectors.
-instance lex : CMonomialOrder σ where
+/-- The lexicographic order on monomials. -/
+def lex : CMonomialOrder σ where
+  -- Lean's `Lex` sorts in the reverse order, so we dualize the ordering on σ in constructing Lex.
   syn   := Lex (Π₀ _ : σᵒᵈ, ℕ)
   acm   := instAddCommMonoidLex
   lo    := DFinsupp.Lex.linearOrder
@@ -144,9 +145,9 @@ instance lex : CMonomialOrder σ where
   toSyn_injective := fun m₁ m₂ h => by
     cases m₁; cases m₂; simp_all
 
--- The graded lexicographic order on monomials first compares by total degree, then breaks ties
--- using the lexicographic order.
-instance grlex : CMonomialOrder σ where
+/-- The graded lexicographic order on monomials. -/
+def grlex : CMonomialOrder σ where
+  -- We augment the lexicographic ordering with the degree.
   syn   := ℕ ×ₗ Lex (Π₀ _ : σᵒᵈ, ℕ)
   acm   := Prod.instAddCommMonoid
   lo    := Prod.Lex.instLinearOrder ℕ (Lex (Π₀ (x : σᵒᵈ), ℕ))
@@ -163,9 +164,10 @@ instance grlex : CMonomialOrder σ where
     have h' : toLex m₁.toFun = toLex m₂.toFun := congr_arg Prod.snd h
     cases m₁; cases m₂; simp_all
 
--- The graded reverse lexicographic order on monomials first compares by total degree, then breaks
--- ties by comparing the exponent vectors in reverse order.
-instance grevlex : CMonomialOrder σ where
+/-- The graded reverse lexicographic order on monomials. -/
+def grevlex : CMonomialOrder σ where
+  -- As in `grlex`, we augment the lexicographic ordering with the degree. Here, however, we don't
+  -- need to dualize the ordering on `σ` as `Lex` already orders them in the intended manner.
   syn   := ℕ ×ₗ Lex (Π₀ _ : σ, ℕ)ᵒᵈ
   acm   := Prod.instAddCommMonoid
   lo    := Prod.Lex.instLinearOrder ℕ (Lex (Π₀ (x : σ), ℕ))ᵒᵈ

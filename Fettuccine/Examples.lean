@@ -43,8 +43,8 @@ end
 section
 instance : CMonomialOrder σ := CMonomialOrder.grlex
 #eval f₁ + f₂
-#eval f₁ * f₂ * f₃
 #eval (f₁ + f₂).leadingMonomial
+#eval f₁ * f₂ * f₃
 #eval (f₁ * f₂ * f₃).leadingMonomial
 end
 
