@@ -184,11 +184,12 @@ theorem grlex_isGraded : @IsGraded _ _ (grlex : CMonomialOrder σ) := by
 /-- The grlex order uses the lexicographic order as a tiebreaker. -/
 theorem grlex_lt_of_eq_degree_lex_lt (m₁ m₂ : CMonomial σ)
     (h : m₁ ≺[grlex] m₂) (hdeg : m₁.degree = m₂.degree) : m₁ ≺[lex] m₂ := by
-  -- The proof state is quite confusing, since both the assumptions and the
-  -- goal are expressed in terms of (different) `toSyn`.
+  -- The proof state is quite confusing, since both the assumptions and the goal are expressed in
+  -- terms of (different) `toSyn`s. Perhaps there is an option that forces the implicit arguments
+  -- to be visible.
   change toLex m₁.toFun < toLex m₂.toFun
   have h' : toLex (m₁.degree, toLex m₁.toFun) < toLex (m₂.degree, toLex m₂.toFun) := h
-  -- This just amounts to unfolding the definition of `Lex` on product types.
+  -- Ultimately, this is true just by the definition of the lexicographic order on product types.
   rw [Prod.Lex.toLex_lt_toLex] at h'
   rcases h' with h' | ⟨_, h'⟩
   · exact absurd hdeg (Nat.ne_of_lt h')
@@ -226,6 +227,37 @@ lemma leadingMonomial_eq_some_of_nonempty (f : CMvPolynomial σ R) (hf : f.suppo
 lemma leadingMonomial_mem_support (f : CMvPolynomial σ R) (hf : f.support.Nonempty) :
     f.support.max' hf ∈ f.support := by
   exact f.support.max'_mem hf
+
+/-- The leading monomial is indeed an upper bound for the support. -/
+lemma le_leadingMonomial (f : CMvPolynomial σ R) {m : CMonomial σ} (hm : m ∈ f.support) :
+    m ≤ f.support.max' ⟨m, hm⟩ := by
+  exact Finset.le_max' _ _ hm
+
+/-- The leading monomial of a single term c * m is just m (when c ≠ 0) -/
+lemma leadingMonomial_monomial (m : CMonomial σ) (c : R) (hc : c ≠ 0) :
+    leadingMonomial (CMvPolynomial.ofMonomial m c) = some m := by
+  rw [leadingMonomial_eq_some_of_nonempty _ (by simp [support_ofMonomial m c hc])]
+  simp [support_ofMonomial m c hc, Finset.max'_singleton]
+
+/-- The leading monomial of a product is the product of leading monomials. -/
+lemma leadingMonomial_mul' (f g : CMvPolynomial σ R) (hf : f ≠ 0) (hg : g ≠ 0) :
+    leadingMonomial (f * g) = (leadingMonomial f).map₂ (· + ·) (leadingMonomial g) := by
+  sorry
+
+lemma leadingMonomial_mul (f g : CMvPolynomial σ R) :
+    leadingMonomial (f * g) = (leadingMonomial f).map₂ (· + ·) (leadingMonomial g) := by
+  by_cases hf : f = 0
+  · simp [hf, leadingMonomial_zero]
+  by_cases hg : g = 0
+  · simp [hg, leadingMonomial_zero]
+  exact leadingMonomial_mul' f g hf hg
+
+/-- The leading monomial of a sum is bounded by the larger of the leading
+    monomials of the summands. -/
+lemma leadingMonomial_add_le' (f g : CMvPolynomial σ R)
+    (hf : f.support.Nonempty) (hg : g.support.Nonempty) (hfg : (f + g).support.Nonempty) :
+    (f + g).support.max' hfg ≤ max (f.support.max' hf) (g.support.max' hg) :=
+  sorry
 
 end CMvPolynomial
 

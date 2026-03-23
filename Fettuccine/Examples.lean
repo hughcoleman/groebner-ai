@@ -79,6 +79,8 @@ example : ((x2 : CMonomial σ) ≺[grlex] y3) := by
   apply grlex_isGraded -- not technically necessary
   decide
 
+example : CMonomialOrder (ℕᵒᵈ) := lex
+
 end Examples_MonomialOrder
 
 section Examples_LeadingMonomial

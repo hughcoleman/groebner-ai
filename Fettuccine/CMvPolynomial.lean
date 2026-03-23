@@ -154,4 +154,12 @@ def X (i : σ) : CMvPolynomial σ R :=
 def C (a : R) : CMvPolynomial σ R :=
   ⟨DirectSum.of (fun _ => R) 0 a⟩
 
+/-- The polynomial with a single term `a m`. -/
+def ofMonomial (m : CMonomial σ) (a : R) : CMvPolynomial σ R :=
+  ⟨DirectSum.of (fun _ => R) m a⟩
+
+lemma support_ofMonomial [DecidableEq R] (m : CMonomial σ) (c : R) (hc : c ≠ 0) :
+    (ofMonomial m c).support = {m} := by
+  simp [support, ofMonomial, hc]
+
 end CMvPolynomial
